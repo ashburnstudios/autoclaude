@@ -226,6 +226,7 @@ else
 fi
 
 # Create a wrapper script that will be used by Claude Code
+mkdir -p .claude-code/temp
 cat > .claude-code/temp/autonomous-wrapper.sh <<EOF
 #!/bin/bash
 # This script ensures AutoClaude mode is maintained
