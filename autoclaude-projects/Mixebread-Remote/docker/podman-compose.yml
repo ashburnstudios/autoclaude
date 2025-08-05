@@ -1,0 +1,92 @@
+# Podman-specific compose file
+# This is optional - the main compose.yml works with podman-compose
+# Use this if you need Podman-specific features
+
+version: '3.8'
+
+services:
+  autoclaude-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: autoclaude/sandbox:latest
+    container_name: autoclaude-dev
+    hostname: autoclaude-sandbox
+    
+    # Podman-specific: Use slirp4netns for rootless networking
+    network_mode: slirp4netns
+    
+    # Resource limits (Podman syntax)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    
+    # Security options for rootless Podman
+    security_opt:
+      - label=disable  # Disable SELinux labeling if needed
+      - no-new-privileges
+    
+    # User namespace mapping (rootless)
+    userns_mode: keep-id
+    
+    # Volumes with proper permissions for rootless
+    volumes:
+      # Mount project directory (Z flag for SELinux if needed)
+      - ../:/home/claude/autoclaude:ro,Z
+      # Workspace for development
+      - workspace:/home/claude/workspace:Z
+      # Shared documentation cache
+      - docs-cache:/home/claude/.cache/docs:Z
+      # Git config persistence
+      - git-config:/home/claude/.gitconfig.d:Z
+    
+    # Environment variables
+    environment:
+      - AUTOCLAUDE_SANDBOX=true
+      - AUTOCLAUDE_SESSION_ID=${SESSION_ID:-default}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - NODE_ENV=development
+      - PYTHONPATH=/home/claude/workspace
+      - PODMAN_USERNS=keep-id
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "echo", "healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    # TTY for interactive use
+    tty: true
+    stdin_open: true
+
+  # Optional: Documentation server for offline docs
+  docs-server:
+    image: docker.io/nginx:alpine
+    container_name: autoclaude-docs
+    volumes:
+      - docs-cache:/usr/share/nginx/html:ro,Z
+    network_mode: slirp4netns
+    expose:
+      - "8080"
+    profiles:
+      - docs
+
+# Podman-specific volume configuration
+volumes:
+  workspace:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/workspace
+  docs-cache:
+    driver: local
+  git-config:
+    driver: local

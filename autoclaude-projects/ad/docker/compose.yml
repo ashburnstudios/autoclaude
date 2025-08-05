@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  autoclaude-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: autoclaude/sandbox:latest
+    container_name: autoclaude-dev
+    hostname: autoclaude-sandbox
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined  # Needed for some development tools
+    
+    # Capabilities (minimal required)
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    
+    # Volumes
+    volumes:
+      # Mount project directory
+      - ../:/home/claude/autoclaude:ro
+      # Workspace for development
+      - workspace:/home/claude/workspace
+      # Shared documentation cache
+      - docs-cache:/home/claude/.cache/docs
+      # Git config persistence
+      - git-config:/home/claude/.gitconfig.d
+      # Docker socket for Docker-in-Docker (optional, security risk)
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
+    
+    # Environment variables
+    environment:
+      - AUTOCLAUDE_SANDBOX=true
+      - AUTOCLAUDE_SESSION_ID=${SESSION_ID:-default}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - NODE_ENV=development
+      - PYTHONPATH=/home/claude/workspace
+    
+    # Network configuration
+    networks:
+      - autoclaude-net
+    
+    # DNS configuration (for documentation fetching)
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "echo", "healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    # TTY for interactive use
+    tty: true
+    stdin_open: true
+
+  # Optional: Documentation server for offline docs
+  docs-server:
+    image: nginx:alpine
+    container_name: autoclaude-docs
+    volumes:
+      - docs-cache:/usr/share/nginx/html:ro
+    networks:
+      - autoclaude-net
+    expose:
+      - "80"
+    profiles:
+      - docs
+
+networks:
+  autoclaude-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  workspace:
+    driver: local
+  docs-cache:
+    driver: local
+  git-config:
+    driver: local

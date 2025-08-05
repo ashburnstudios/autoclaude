@@ -1,0 +1,5 @@
+# AutoClaude Configuration
+AUTOCLAUDE_WORKSPACE="/Users/jth/autoclaude-projects"
+AUTOCLAUDE_DEFAULT_RUNTIME="podman"
+AUTOCLAUDE_AUTO_COMMIT="false"
+AUTOCLAUDE_USE_SANDBOX="false"
