@@ -1,77 +1,204 @@
 # Project: {{PROJECT_NAME}}
 
-## Mission
-{{PROJECT_MISSION}}
+## 🎯 Mission
+{{PROJECT_DESCRIPTION}}
 
-## Architecture Decisions
+## 📊 Project Information
+- **Created**: {{CREATED_DATE}}
+- **AutoClaude Version**: 1.0.0
+- **Location**: {{PROJECT_PATH}}
+- **Total Sessions**: {{SESSION_COUNT}}
+- **Current Context Usage**: {{CONTEXT_PERCENTAGE}}%
+
+## 🏗️ Architecture Decisions
 
 ### Technology Stack
-- **Primary Language**: {{PRIMARY_LANGUAGE}}
-  - Rationale: {{LANGUAGE_RATIONALE}}
-- **Framework**: {{FRAMEWORK}}
-  - Rationale: {{FRAMEWORK_RATIONALE}}
-- **Key Dependencies**:
-  {{DEPENDENCIES_LIST}}
+- **Backend**: [To be determined based on requirements]
+- **Frontend**: [To be determined based on requirements]
+- **Database**: [To be determined based on requirements]
+- **Authentication**: [To be determined based on requirements]
+- **Testing**: [To be determined based on requirements]
 
-### Design Principles
-1. Minimize external dependencies
-2. Prefer stable, well-documented libraries
-3. Follow existing conventions when found
-4. Optimize for LLM comprehension
+### Design Patterns
+- [ ] API Design (REST/GraphQL)
+- [ ] Database Schema Design
+- [ ] Authentication Strategy
+- [ ] Error Handling Strategy
+- [ ] Logging Strategy
+- [ ] Security Measures
 
-## Implementation Progress
+### Key Decisions Log
+| Date | Decision | Reasoning | Impact |
+|------|----------|-----------|---------|
+| {{CREATED_DATE}} | Project initialized | AutoClaude autonomous development | Foundation |
 
-### Completed ✅
-{{COMPLETED_TASKS}}
+## 📋 Implementation Progress
 
-### In Progress 🚧
-{{IN_PROGRESS_TASKS}}
+### ✅ Completed
+- [ ] Project initialization
+- [ ] Requirements analysis
+- [ ] Technology selection
+- [ ] Architecture design
+- [ ] Core implementation
+- [ ] Testing implementation
+- [ ] Documentation
+- [ ] Deployment setup
 
-### Planned 📋
-{{PLANNED_TASKS}}
+### 🚧 In Progress
+- [ ] Requirements analysis
 
-## Context Compression Points
+### 📋 Planned
+- [ ] Technology selection
+- [ ] Architecture design
+- [ ] Core implementation
+- [ ] Testing
+- [ ] Documentation
+- [ ] Deployment
 
-### Session History
-{{SESSION_HISTORY}}
+## 🔍 Research & Discovery
 
-## Critical Code Patterns
+### Technology Research
+- **Backend Options**: [Research findings]
+- **Frontend Options**: [Research findings]
+- **Database Options**: [Research findings]
+- **Authentication Options**: [Research findings]
 
-### Discovered Conventions
-{{DISCOVERED_PATTERNS}}
+### Best Practices Identified
+- [ ] Security best practices
+- [ ] Performance optimization
+- [ ] Testing strategies
+- [ ] Documentation standards
 
-### Style Guidelines
-{{STYLE_GUIDELINES}}
+### Lessons Learned
+- [ ] Patterns discovered
+- [ ] Challenges encountered
+- [ ] Solutions implemented
+- [ ] Optimization opportunities
 
-## Documentation Sources
+## 📝 Session History
 
-### Official Documentation
-{{OFFICIAL_DOCS}}
+### Session {{SESSION_COUNT}} - {{CREATED_DATE}}
+- **Duration**: [To be tracked]
+- **Context Usage**: [To be tracked]
+- **Major Accomplishments**: [To be documented]
+- **Key Decisions**: [To be documented]
+- **Next Steps**: [To be planned]
 
-### Reference Examples
-{{REFERENCE_EXAMPLES}}
+## 🔄 Context Compression Points
+- **Session {{SESSION_COUNT}} started**: {{CREATED_DATE}}T{{SESSION_TIME}}Z
+- **Compression triggers**: [To be tracked]
+- **Handoff points**: [To be tracked]
 
-### Community Resources
-{{COMMUNITY_RESOURCES}}
+## 🛠️ Development Environment
 
-## Error Patterns & Solutions
+### Container Runtime
+- **Runtime**: [Docker/Podman/None]
+- **Status**: [Available/Not Available]
+- **Sandbox**: [Enabled/Disabled]
 
-### Known Issues
-{{KNOWN_ISSUES}}
+### Dependencies
+- **Claude Code**: [Version]
+- **Container Runtime**: [Version]
+- **Git**: [Version]
+- **Other Tools**: [Versions]
 
-### Resolved Problems
-{{RESOLVED_PROBLEMS}}
+## 📚 Documentation Index
 
-## Handoff Instructions
+### Project Documentation
+- [ ] README.md - Project overview and setup
+- [ ] API Documentation - Endpoint specifications
+- [ ] Database Schema - Data model documentation
+- [ ] Deployment Guide - Production deployment instructions
+- [ ] Testing Guide - How to run tests
 
-### For Next Session
-{{HANDOFF_INSTRUCTIONS}}
+### Development Documentation
+- [ ] Architecture Decision Records (ADRs)
+- [ ] Code Style Guide
+- [ ] Contributing Guidelines
+- [ ] Security Guidelines
 
-### Critical Context
-{{CRITICAL_CONTEXT}}
+## 🚀 Deployment & Operations
 
-## Auto-Generated Metadata
-- Created: {{CREATED_DATE}}
-- Last Updated: {{LAST_UPDATED}}
-- Total Sessions: {{SESSION_COUNT}}
-- Current Context Usage: {{CONTEXT_PERCENTAGE}}%
+### Environment Configuration
+- **Development**: [Configuration details]
+- **Staging**: [Configuration details]
+- **Production**: [Configuration details]
+
+### Monitoring & Logging
+- [ ] Application logging strategy
+- [ ] Error tracking setup
+- [ ] Performance monitoring
+- [ ] Health checks
+
+## 🔒 Security Considerations
+
+### Authentication & Authorization
+- [ ] User authentication method
+- [ ] Authorization strategy
+- [ ] Session management
+- [ ] Password policies
+
+### Data Protection
+- [ ] Data encryption strategy
+- [ ] PII handling
+- [ ] GDPR compliance
+- [ ] Data backup strategy
+
+### Infrastructure Security
+- [ ] Network security
+- [ ] Container security
+- [ ] Dependency scanning
+- [ ] Security testing
+
+## 📈 Performance & Scalability
+
+### Performance Metrics
+- [ ] Response time targets
+- [ ] Throughput requirements
+- [ ] Resource utilization
+- [ ] Optimization opportunities
+
+### Scalability Strategy
+- [ ] Horizontal scaling approach
+- [ ] Database scaling
+- [ ] Caching strategy
+- [ ] Load balancing
+
+## 🧪 Testing Strategy
+
+### Test Coverage
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] End-to-end tests
+- [ ] Performance tests
+- [ ] Security tests
+
+### Testing Tools
+- [ ] Test framework
+- [ ] Mocking strategy
+- [ ] Test data management
+- [ ] CI/CD integration
+
+## 📊 Metrics & Analytics
+
+### Development Metrics
+- **Lines of Code**: [To be tracked]
+- **Test Coverage**: [To be tracked]
+- **Technical Debt**: [To be tracked]
+- **Bug Count**: [To be tracked]
+
+### Performance Metrics
+- **Response Time**: [To be tracked]
+- **Throughput**: [To be tracked]
+- **Error Rate**: [To be tracked]
+- **Uptime**: [To be tracked]
+
+---
+
+## 🤖 Auto-Generated Metadata
+- **Created**: {{CREATED_DATE}}
+- **Last Updated**: {{CREATED_DATE}}
+- **Total Sessions**: {{SESSION_COUNT}}
+- **Current Context Usage**: {{CONTEXT_PERCENTAGE}}%
+- **AutoClaude Version**: 1.0.0
+- **Template Version**: 2.0.0

@@ -32,6 +32,9 @@ Follows the proven pattern: `Explore → Plan → Research → Implement → Tes
 ### 5. **Self-Documentation**
 Maintains its own CLAUDE.md with architectural decisions, progress tracking, and discovered patterns.
 
+### 6. **GitHub Integration**
+Automatic PR reviews with Claude Code and seamless feedback integration back to Cursor for local development.
+
 ## Quick Start
 
 ### Option 1: Interactive Menu (Recommended)
@@ -63,6 +66,16 @@ claude --config-dir .claude-code/config
 ./scripts/launch-autonomous.sh "Build a REST API for task management"
 ```
 
+### Option 3: GitHub Integration Setup
+
+```bash
+# Set up GitHub integration for PR feedback
+./scripts/setup-github-integration.sh
+
+# Review PR feedback in Cursor
+./scripts/review-pr.sh <PR_NUMBER>
+```
+
 ### Container Runtime
 
 AutoClaude automatically detects and uses either Docker or Podman. For Podman-specific configuration, see [docs/PODMAN.md](docs/PODMAN.md).
@@ -77,6 +90,7 @@ AutoClaude includes a comprehensive interactive menu for managing projects:
 - **Git Integration**: Commit, push, and manage branches directly from the menu
 - **Container Management**: Start/stop sandboxes, view logs, and manage images
 - **Configuration**: Adjust settings, environment variables, and runtime preferences
+- **GitHub Integration**: Fetch PR feedback and integrate with local development
 
 Access the menu anytime with the `autoclaude` command after installation.
 

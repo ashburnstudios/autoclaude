@@ -90,33 +90,106 @@ EOF
 
 # Create initial prompt that triggers autonomous behavior
 AUTONOMOUS_PROMPT=$(cat <<'EOF'
-You are now in autonomous mode. Your mission is to:
+You are now in autonomous mode with enhanced intelligence. Your mission is to:
 
-1. Analyze the project requirements
-2. Research and select appropriate technologies (prefer stable, well-documented options)
-3. Create a detailed implementation plan
-4. Set up the project structure
-5. Implement the solution incrementally
-6. Write comprehensive tests
-7. Document your decisions in CLAUDE.md
-8. Commit progress to GitHub when appropriate
+## 🎯 Core Mission
+1. **Analyze Requirements**: Deeply understand the project requirements and constraints
+2. **Research & Select Technologies**: Choose optimal technologies based on stability, documentation, and LLM compatibility
+3. **Create Detailed Plan**: Develop a comprehensive implementation roadmap
+4. **Implement Incrementally**: Build the solution step-by-step with testing
+5. **Document Decisions**: Maintain detailed architectural decisions in CLAUDE.md
+6. **Commit Progress**: Save meaningful milestones to version control
+
+## 🧠 Enhanced Decision Framework
+
+### Technology Selection Criteria:
+- **Stability First**: Prefer mature, well-documented technologies
+- **LLM Compatibility**: Choose frameworks that work well with AI code generation
+- **Community Support**: Prioritize active communities and good documentation
+- **Performance**: Consider scalability and performance requirements
+- **Security**: Implement security best practices from the start
+
+### Recommended Technology Stack (by use case):
+- **Web APIs**: Flask (Python), Express.js (Node.js), or Go with Gin
+- **Frontend**: React with TypeScript, or vanilla JS for simple projects
+- **Database**: SQLite for development, PostgreSQL for production
+- **Authentication**: JWT tokens, OAuth2 for external auth
+- **Testing**: pytest (Python), Jest (Node.js), or built-in testing
+- **Documentation**: OpenAPI/Swagger for APIs, README.md for projects
+
+### Research Protocol:
+1. **Official Documentation**: Always start with official docs
+2. **Best Practices**: Research industry standards and patterns
+3. **Security Considerations**: Look for security guidelines
+4. **Performance Patterns**: Find optimization strategies
+5. **Testing Strategies**: Understand testing approaches
+
+## 📋 Implementation Workflow
+
+### Phase 1: Analysis & Planning (15 minutes)
+- [ ] Analyze project requirements thoroughly
+- [ ] Research appropriate technologies
+- [ ] Create detailed project plan
+- [ ] Set up project structure
+- [ ] Initialize version control
+
+### Phase 2: Core Implementation (45 minutes)
+- [ ] Implement core functionality
+- [ ] Add comprehensive tests
+- [ ] Handle error cases
+- [ ] Implement security measures
+- [ ] Add logging and monitoring
+
+### Phase 3: Polish & Documentation (15 minutes)
+- [ ] Write comprehensive documentation
+- [ ] Create usage examples
+- [ ] Add deployment instructions
+- [ ] Update CLAUDE.md with decisions
+- [ ] Commit final version
+
+## 🔧 Tool Usage Guidelines
+
+### Always Use:
+- **TodoWrite**: Track all tasks and progress
+- **Codebase Search**: Find relevant patterns and examples
+- **Web Search**: Research official documentation and best practices
+- **File Operations**: Create and modify project files systematically
+
+### Context Management:
+- Monitor context usage continuously
+- Prepare handoff documentation when approaching limits
+- Use compression strategies to maintain session continuity
+- Save critical decisions to CLAUDE.md
+
+## 📝 Documentation Standards
+
+### CLAUDE.md Updates:
+- **Architecture Decisions**: Document technology choices and reasoning
+- **Implementation Progress**: Track completed, in-progress, and planned tasks
+- **Context Compression**: Note when sessions are compressed or handed off
+- **Lessons Learned**: Record patterns and insights discovered
+
+### Code Documentation:
+- **README.md**: Comprehensive project overview
+- **API Documentation**: OpenAPI specs for web services
+- **Inline Comments**: Explain complex logic and decisions
+- **Setup Instructions**: Clear installation and usage guides
+
+## 🚀 Execution Protocol
 
 Project Description: PROJECT_DESCRIPTION_PLACEHOLDER
 
-Please begin by:
-1. Creating a detailed project plan
-2. Researching the best technologies for this use case
-3. Setting up the initial project structure
+**Begin autonomous development now with this enhanced framework.**
 
-Remember to:
-- Use the TodoWrite tool to track all tasks
-- Prefer stable technologies (Go, Flask, Node.js with Express)
-- Research official documentation before implementing
+Remember:
+- Think systematically and document your reasoning
+- Research before implementing
+- Test thoroughly at each step
 - Commit progress at meaningful milestones
-- Update CLAUDE.md with architectural decisions
-- Monitor context usage and prepare for handoff if needed
+- Maintain high code quality and security standards
+- Update CLAUDE.md with all architectural decisions
 
-Begin autonomous development now.
+Start with Phase 1: Analysis & Planning
 EOF
 )
 
