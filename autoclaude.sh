@@ -359,17 +359,25 @@ existing_project_menu() {
     
     # List projects
     list_projects
-    
+
     # Count projects
     local project_count=$(wc -l < "$AUTOCLAUDE_PROJECTS")
-    
-    echo "Select project (1-$project_count) or 0 to return: "
+    local add_option=$((project_count + 1))
+
+    echo -e "${GREEN}${add_option})${NC} ${BOLD}Add existing project${NC}"
+    echo ""
+    echo "Select option (1-$add_option) or 0 to return: "
     read -p "> " project_choice
-    
+
     if [ "$project_choice" = "0" ]; then
         return
     fi
-    
+
+    if [ "$project_choice" = "$add_option" ]; then
+        import_project
+        return
+    fi
+
     # Get selected project
     local selected_project=$(sed -n "${project_choice}p" "$AUTOCLAUDE_PROJECTS")
     if [ -z "$selected_project" ]; then
