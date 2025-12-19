@@ -68,6 +68,55 @@ AUTOCLAUDE_USE_SANDBOX="${AUTOCLAUDE_USE_SANDBOX}"
 EOF
 }
 
+# Per-project configuration file
+PROJECT_CONFIG_FILE=".autoclaude.json"
+
+# Get a value from project config (requires jq, falls back to grep)
+get_project_config() {
+    local key="$1"
+    local config_file="${2:-$PROJECT_CONFIG_FILE}"
+
+    if [ ! -f "$config_file" ]; then
+        return 1
+    fi
+
+    if command -v jq &> /dev/null; then
+        jq -r ".$key // empty" "$config_file" 2>/dev/null
+    else
+        # Fallback: simple grep for "key": "value" pattern
+        grep -oP "\"$key\"[[:space:]]*:[[:space:]]*\"\\K[^\"]*" "$config_file" 2>/dev/null
+    fi
+}
+
+# Set a value in project config
+set_project_config() {
+    local key="$1"
+    local value="$2"
+    local config_file="${3:-$PROJECT_CONFIG_FILE}"
+
+    if command -v jq &> /dev/null; then
+        if [ -f "$config_file" ]; then
+            local tmp=$(mktemp)
+            jq ".$key = \"$value\"" "$config_file" > "$tmp" && mv "$tmp" "$config_file"
+        else
+            echo "{\"$key\": \"$value\"}" | jq '.' > "$config_file"
+        fi
+    else
+        # Fallback: simple JSON write (won't merge, just overwrites)
+        if [ -f "$config_file" ]; then
+            # Try to preserve existing values (basic approach)
+            local existing=$(cat "$config_file" | tr -d '\n' | sed 's/}$//')
+            if [ "$existing" = "{" ]; then
+                echo "{\"$key\": \"$value\"}" > "$config_file"
+            else
+                echo "${existing}, \"$key\": \"$value\"}" > "$config_file"
+            fi
+        else
+            echo "{\"$key\": \"$value\"}" > "$config_file"
+        fi
+    fi
+}
+
 # Project management functions
 list_projects() {
     if [ -f "$AUTOCLAUDE_PROJECTS" ]; then
@@ -449,6 +498,187 @@ project_status() {
         find .claude-code/logs -type f -name "*.log" -exec basename {} \; | head -5
     fi
     
+    echo ""
+    read -p "Press Enter to continue..."
+}
+
+# Run tests
+run_tests() {
+    show_banner
+    echo -e "${CYAN}Run Tests${NC}"
+    echo "========="
+    echo ""
+
+    local test_found=false
+    local saved_cmd=$(get_project_config "testCommand")
+
+    # Check for saved test command
+    if [ -n "$saved_cmd" ]; then
+        echo -e "${GREEN}Saved test command:${NC} $saved_cmd"
+        echo ""
+        echo "1) Run saved command"
+        echo "2) Reconfigure"
+        echo "0) Cancel"
+        echo ""
+        read -p "Select option: " saved_choice
+
+        case $saved_choice in
+            1)
+                echo ""
+                echo "Running: $saved_cmd"
+                echo ""
+                if eval "$saved_cmd"; then
+                    echo ""
+                    echo -e "${GREEN}Tests passed${NC}"
+                else
+                    echo ""
+                    echo -e "${RED}Tests failed (exit code: $?)${NC}"
+                fi
+                echo ""
+                read -p "Press Enter to continue..."
+                return
+                ;;
+            2)
+                # Fall through to detection
+                echo ""
+                ;;
+            *)
+                return
+                ;;
+        esac
+    fi
+
+    # Auto-detect and run appropriate test framework
+    if [ -f "package.json" ]; then
+        # Extract all test-related scripts from package.json
+        local test_scripts=()
+        while IFS= read -r script; do
+            [ -n "$script" ] && test_scripts+=("$script")
+        done < <(grep -oE '"test[^"]*"[[:space:]]*:' package.json | sed 's/"//g; s/[[:space:]]*:$//' | sort -u)
+
+        if [ ${#test_scripts[@]} -gt 0 ]; then
+            echo -e "${YELLOW}Detected: Node.js project${NC}"
+            echo ""
+            test_found=true
+
+            if [ ${#test_scripts[@]} -eq 1 ]; then
+                local cmd="npm run ${test_scripts[0]}"
+                echo "Running: $cmd"
+                echo ""
+                set_project_config "testCommand" "$cmd"
+                echo -e "${GREEN}Saved to .autoclaude.json${NC}"
+                echo ""
+                npm run "${test_scripts[0]}" || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+            else
+                echo "Available test scripts:"
+                local i=1
+                for script in "${test_scripts[@]}"; do
+                    echo "  $i) $script"
+                    ((i++))
+                done
+                echo "  0) Cancel"
+                echo ""
+                read -p "Select test script to run: " script_choice
+
+                if [ "$script_choice" = "0" ] || [ -z "$script_choice" ]; then
+                    echo "Cancelled."
+                elif [ "$script_choice" -ge 1 ] 2>/dev/null && [ "$script_choice" -le ${#test_scripts[@]} ]; then
+                    local selected="${test_scripts[$((script_choice-1))]}"
+                    local cmd="npm run $selected"
+                    echo ""
+                    echo "Running: $cmd"
+                    echo ""
+                    set_project_config "testCommand" "$cmd"
+                    echo -e "${GREEN}Saved to .autoclaude.json${NC}"
+                    echo ""
+                    npm run "$selected" || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+                else
+                    echo -e "${RED}Invalid selection${NC}"
+                fi
+            fi
+        fi
+    fi
+
+    if [ -f "Cargo.toml" ] && ! $test_found; then
+        echo -e "${YELLOW}Detected: Rust project${NC}"
+        echo ""
+        test_found=true
+        set_project_config "testCommand" "cargo test"
+        cargo test || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+    fi
+
+    if [ -f "pyproject.toml" ] || [ -f "setup.py" ] || [ -f "pytest.ini" ] && ! $test_found; then
+        echo -e "${YELLOW}Detected: Python project${NC}"
+        echo ""
+        test_found=true
+        if command -v pytest &> /dev/null; then
+            set_project_config "testCommand" "pytest"
+            pytest || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+        elif command -v python3 &> /dev/null; then
+            set_project_config "testCommand" "python3 -m pytest"
+            python3 -m pytest || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+        else
+            set_project_config "testCommand" "python -m pytest"
+            python -m pytest || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+        fi
+    fi
+
+    if [ -f "Makefile" ] && grep -q "^test:" Makefile && ! $test_found; then
+        echo -e "${YELLOW}Detected: Makefile with test target${NC}"
+        echo ""
+        test_found=true
+        set_project_config "testCommand" "make test"
+        make test || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+    fi
+
+    if [ -f "go.mod" ] && ! $test_found; then
+        echo -e "${YELLOW}Detected: Go project${NC}"
+        echo ""
+        test_found=true
+        set_project_config "testCommand" "go test ./..."
+        go test ./... || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+    fi
+
+    if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ] && ! $test_found; then
+        echo -e "${YELLOW}Detected: Gradle project${NC}"
+        echo ""
+        test_found=true
+        set_project_config "testCommand" "./gradlew test"
+        ./gradlew test || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+    fi
+
+    if [ -f "pom.xml" ] && ! $test_found; then
+        echo -e "${YELLOW}Detected: Maven project${NC}"
+        echo ""
+        test_found=true
+        set_project_config "testCommand" "mvn test"
+        mvn test || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+    fi
+
+    if ! $test_found; then
+        echo -e "${YELLOW}No recognised test framework detected.${NC}"
+        echo ""
+        echo "Supported frameworks:"
+        echo "  - Node.js (npm run test* via package.json)"
+        echo "  - Rust (cargo test)"
+        echo "  - Python (pytest)"
+        echo "  - Go (go test)"
+        echo "  - Make (make test)"
+        echo "  - Gradle (./gradlew test)"
+        echo "  - Maven (mvn test)"
+        echo ""
+        echo "You can manually configure a test command:"
+        read -p "Enter test command (or press Enter to skip): " manual_cmd
+        if [ -n "$manual_cmd" ]; then
+            set_project_config "testCommand" "$manual_cmd"
+            echo -e "${GREEN}Saved to .autoclaude.json${NC}"
+            echo ""
+            echo "Running: $manual_cmd"
+            echo ""
+            eval "$manual_cmd" || echo -e "${RED}Tests failed (exit code: $?)${NC}"
+        fi
+    fi
+
     echo ""
     read -p "Press Enter to continue..."
 }
